@@ -211,7 +211,3 @@ For details on the smoke test script, see the `test/smoke-test.sh` file.
 - **Vijay Kumar Periketi** - Project Lead & Developer
 
 ---
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
