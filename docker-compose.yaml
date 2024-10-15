@@ -1,0 +1,167 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  neo4j:
+    image: neo4j:latest
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${SPRING_DATASOURCE_USER}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      POSTGRES_DB: financial_analytics_platform
+    ports:
+      - "5432:5432"
+
+  user-management:
+    image: vijaykumarperiketi/user-management:latest
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      SERVICE_NAME: user-management
+      JWT_SECRET: ${JWT_SECRET}
+      KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+      KAFKA_CONSUMER_GROUP: user-management-group
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+      - neo4j
+    ports:
+      - "8081:8080"
+
+  transaction-service:
+    image: vijaykumarperiketi/transaction-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      SERVICE_NAME: transaction-service
+      KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+      KAFKA_CONSUMER_GROUP: transaction-group
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+    ports:
+      - "8082:8080"
+
+  notification-service:
+    image: vijaykumarperiketi/notification-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      SERVICE_NAME: notification-service
+      KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+      KAFKA_CONSUMER_GROUP: notification-group
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+    ports:
+      - "8083:8080"
+
+  recommendation-engine:
+    image: vijaykumarperiketi/recommendation-engine:latest
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      SERVICE_NAME: recommendation-engine
+      SPRING_NEO4J_URI: ${SPRING_NEO4J_URI}
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: ${SPRING_NEO4J_AUTHENTICATION_USERNAME}
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+      KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+      KAFKA_CONSUMER_GROUP: recommendation-group
+    depends_on:
+      - postgres
+      - neo4j
+      - zookeeper
+      - kafka
+    ports:
+      - "8084:8080"
+
+  analytics-service:
+    image: vijaykumarperiketi/analytics-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      SERVICE_NAME: analytics-service
+      KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+      KAFKA_CONSUMER_GROUP: analytics-group
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+    ports:
+      - "8085:8080"
+
+  admin-service:
+    image: vijaykumarperiketi/admin-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      SERVICE_NAME: admin-service
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: ${SPRING_REDIS_PASSWORD}
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+      - neo4j
+      - redis
+    ports:
+      - "8086:8080"
+
+  frontend:
+    image: vijaykumarperiketi/frontend:latest
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:8081
+    ports:
+      - "3000:80"

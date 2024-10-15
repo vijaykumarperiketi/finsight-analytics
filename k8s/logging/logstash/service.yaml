@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: financial-analytics-platform
+spec:
+  ports:
+  - port: 5044
+    targetPort: 5044
+    name: beats-input
+  - port: 9600
+    targetPort: 9600
+    name: http-api
+  selector:
+    app: logstash

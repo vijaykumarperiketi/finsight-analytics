@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: financial-analytics-platform
+data:
+  elasticsearch.yml: |
+    cluster.name: "financial-analytics-cluster"
+    network.host: 0.0.0.0
+    http.port: 9200
+    discovery.type: single-node

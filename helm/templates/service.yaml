@@ -1,0 +1,15 @@
+{{- range .Values.microservices }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  namespace: financial-analytics-platform
+spec:
+  selector:
+    app: {{ .name }}
+  ports:
+    - protocol: TCP
+      port: {{ $.Values.service.port }}
+      targetPort: {{ .containerPort }}
+  type: {{ $.Values.service.type }}
+{{- end }}

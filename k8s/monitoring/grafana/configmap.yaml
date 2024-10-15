@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: financial-analytics-platform
+data:
+  grafana.ini: |
+    [server]
+    # Address to bind to, allowing Grafana to listen on all network interfaces
+    http_addr = 0.0.0.0
+    http_port = 3000
+
+    [security]
+    # Disable user signup
+    disable_signout_menu = true
+
+    [auth.anonymous]
+    enabled = true
+
+    [dashboards.json]
+    enabled = true
+
+    [datasources]
+    [datasources.default]
+    name = Prometheus
+    type = prometheus
+    access = proxy
+    url = http://prometheus.financial-analytics-platform.svc.cluster.local:9090
+    isDefault = true

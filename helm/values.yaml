@@ -1,0 +1,122 @@
+replicaCount: 1
+
+image:
+  repository: vijaykumarperiketi
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: []
+
+postgres:
+  db: financial_analytics_platform
+  host: postgres.financial-analytics-platform.svc.cluster.local
+  port: 5432
+
+vault:
+  addr: http://vault.financial-analytics-platform.svc.cluster.local:8200
+
+neo4j:
+  address: bolt://neo4j.financial-analytics-platform.svc.cluster.local:7687
+
+kafka:
+  bootstrapServers: kafka.financial-analytics-platform.svc.cluster.local:9092
+
+zookeeper:
+  address: zookeeper.financial-analytics-platform.svc.cluster.local:2181
+
+redis:
+  host: redis.financial-analytics-platform.svc.cluster.local
+  port: 6379
+
+elk:
+  elasticsearchUrl: http://elasticsearch.financial-analytics-platform.svc.cluster.local:9200
+  kibanaUrl: http://kibana.financial-analytics-platform.svc.cluster.local:5601
+
+monitoring:
+  prometheusUrl: http://prometheus.financial-analytics-platform.svc.cluster.local:9090
+  grafanaUrl: http://grafana.financial-analytics-platform.svc.cluster.local:3000
+
+ingress:
+  enabled: true
+  host: your-cluster-ip.nip.io
+  paths:
+    - path: /auth
+      service: user-management
+      port: 8080
+    - path: /users
+      service: user-management
+      port: 8080
+    - path: /users/:id
+      service: user-management
+      port: 8080
+    - path: /users/:userId/financial-goals
+      service: user-management
+      port: 8080
+    - path: /users/:userId/financial-goals/:financialGoalId
+      service: user-management
+      port: 8080
+    - path: /users/:userId/debts
+      service: user-management
+      port: 8080
+    - path: /users/:userId/debts/:debtId
+      service: user-management
+      port: 8080
+    - path: /transactions
+      service: transaction-service
+      port: 8080
+    - path: /transactions/new
+      service: transaction-service
+      port: 8080
+    - path: /transactions/:transactionId
+      service: transaction-service
+      port: 8080
+    - path: /recommendations
+      service: recommendation-engine
+      port: 8080
+    - path: /recommendations/:recommendationId
+      service: recommendation-engine
+      port: 8080
+    - path: /notifications
+      service: notification-service
+      port: 8080
+    - path: /notifications/:notificationId
+      service: notification-service
+      port: 8080
+    - path: /analytics
+      service: analytics-service
+      port: 8080
+    - path: /analytics/:analyticsId
+      service: analytics-service
+      port: 8080
+    - path: /admin
+      service: admin-service
+      port: 8080
+    - path: /
+      service: frontend
+      port: 80
+
+microservices:
+  - name: user-management
+    containerPort: 8081
+  - name: transaction-service
+    containerPort: 8082
+  - name: notification-service
+    containerPort: 8083
+  - name: recommendation-engine
+    containerPort: 8084
+  - name: analytics-service
+    containerPort: 8085
+  - name: admin-service
+    containerPort: 8086
+  - name: frontend
+    containerPort: 80

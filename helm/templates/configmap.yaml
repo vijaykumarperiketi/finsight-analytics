@@ -1,0 +1,10 @@
+{{- range .Values.microservices }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}-config
+  namespace: financial-analytics-platform
+data:
+  application.properties: |
+    # Add your application-specific properties here
+{{- end }}

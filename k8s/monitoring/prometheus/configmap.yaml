@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: financial-analytics-platform
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      # Scrape configuration for Prometheus itself
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      # Scrape configuration for user-management service
+      - job_name: 'user-management'
+        static_configs:
+          - targets: ['user-management.financial-analytics-platform.svc.cluster.local:8080']
+
+      # Scrape configuration for transaction-service
+      - job_name: 'transaction-service'
+        static_configs:
+          - targets: ['transaction-service.financial-analytics-platform.svc.cluster.local:8080']
+
+      # Scrape configuration for recommendation-engine service
+      - job_name: 'recommendation-engine'
+        static_configs:
+          - targets: ['recommendation-engine.financial-analytics-platform.svc.cluster.local:8080']
+
+      # Scrape configuration for notification-service
+      - job_name: 'notification-service'
+        static_configs:
+          - targets: ['notification-service.financial-analytics-platform.svc.cluster.local:8080']
+
+      # Scrape configuration for analytics-service
+      - job_name: 'analytics-service'
+        static_configs:
+          - targets: ['analytics-service.financial-analytics-platform.svc.cluster.local:8080']
+      
+      # Scrape configuration for admin-service
+      - job_name: 'admin-service'
+        static_configs:
+          - targets: ['admin-service.financial-analytics-platform.svc.cluster.local:8080']
+
+      # Scrape configuration for Elasticsearch
+      - job_name: 'elasticsearch'
+        static_configs:
+          - targets: ['elasticsearch.financial-analytics-platform.svc.cluster.local:9200']
+
+      # Scrape configuration for Grafana
+      - job_name: 'grafana'
+        static_configs:
+          - targets: ['grafana.financial-analytics-platform.svc.cluster.local:3000']

@@ -1,0 +1,87 @@
+{{- range .Values.microservices }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}-deployment
+  namespace: financial-analytics-platform
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      containers:
+        - name: {{ .name }}
+          image: {{ $.Values.image.repository }}/{{ .name }}:{{ $.Values.image.tag }}
+          ports:
+            - containerPort: {{ .containerPort }}
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://{{ $.Values.postgres.host }}:{{ $.Values.postgres.port }}/financial_analytics_platform
+            - name: VAULT_ADDR
+              value: {{ $.Values.vault.addr }}
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-token-secret
+                  key: vault-token
+            - name: SERVICE_NAME
+              value: {{ .name }}
+            - name: ELASTICSEARCH_URL
+              value: {{ $.Values.elk.elasticsearchUrl }}
+            - name: KIBANA_URL
+              value: {{ $.Values.elk.kibanaUrl }}
+            - name: PROMETHEUS_URL
+              value: {{ $.Values.monitoring.prometheusUrl }}
+            - name: GRAFANA_URL
+              value: {{ $.Values.monitoring.grafanaUrl }}
+            {{- if eq .name "admin-service" }}
+            - name: SPRING_REDIS_HOST
+              value: {{ $.Values.redis.host }}
+            - name: SPRING_REDIS_PORT
+              value: "{{ $.Values.redis.port }}"
+            - name: SPRING_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}-secret
+                  key: redis-password
+            {{- end }}
+            {{- if eq .name "recommendation-engine" }}
+            - name: SPRING_NEO4J_URI
+              value: {{ $.Values.neo4j.address }}
+            - name: SPRING_NEO4J_AUTHENTICATION_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}-secret
+                  key: neo4j-username
+            - name: SPRING_NEO4J_AUTHENTICATION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}-secret
+                  key: neo4j-password
+            {{ -end }}
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: {{ $.Values.kafka.bootstrapServers }}
+            {{- if eq .name "user-management" }}
+            - name: KAFKA_CONSUMER_GROUP
+              value: user-management-group
+            {{- else if eq .name "transaction-service" }}
+            - name: KAFKA_CONSUMER_GROUP
+              value: transaction-group
+            {{- else if eq .name "notification-service" }}
+            - name: KAFKA_CONSUMER_GROUP
+              value: notification-group
+            {{- else if eq .name "analytics-service" }}
+            - name: KAFKA_CONSUMER_GROUP
+              value: analytics-group
+            {{- else if eq .name "recommendation-engine" }}
+            - name: KAFKA_CONSUMER_GROUP
+              value: recommendation-group
+            {{- end }}
+          command: ["/bin/sh"]
+          args: ["/startup.sh"]
+{{- end }}
