@@ -1,4 +1,4 @@
-package com.finsightanalytics.usermanagement.service;
+package com.finsightanalytics.usermanagement.service.kafka;
 
 import com.finsightanalytics.common.model.Transaction;
 import com.finsightanalytics.usermanagement.service.UserService;

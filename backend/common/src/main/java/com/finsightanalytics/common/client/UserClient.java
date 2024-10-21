@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "user-management", url = "http://user-management.default.svc.cluster.local:8080")
+@FeignClient(name = "user-management", url = "${feign.client.user-management.url}")
 public interface UserClient {
 
-
+    @GetMapping("/users")
+    List<User> getAllUsers();
 }

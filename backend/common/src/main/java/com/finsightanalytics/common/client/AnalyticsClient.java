@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "analytics-service", url = "http://analytics-service.default.svc.cluster.local:8080")
+@FeignClient(name = "analytics-service", url = "${feign.client.analytics-service.url}")
 public interface AnalyticsClient {
 
     @GetMapping("/analytics")
-    List<AnalyticsData> getAllAnalyticsData(@RequestParam String role);
+    List<AnalyticsData> getAllAnalyticsData();
 }
