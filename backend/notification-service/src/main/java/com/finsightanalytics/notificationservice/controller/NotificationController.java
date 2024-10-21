@@ -15,31 +15,29 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping
-    public ResponseEntity<List<Notification>> getAllNotifications() {
-        List<Notification> notifications = notificationService.getAllNotifications();
-        return ResponseEntity.ok(notifications);
-    }
-
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER', 'CUSTOMER')")
     public ResponseEntity<Notification> getNotificationById(@PathVariable Long id) {
         Notification notification = notificationService.getNotificationById(id);
         return ResponseEntity.ok(notification);
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER', 'CUSTOMER')")
     public ResponseEntity<List<Notification>> getNotificationsByUserId(@PathVariable Long userId) {
         List<Notification> notifications = notificationService.getNotificationsByUserId(userId);
         return ResponseEntity.ok(notifications);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER')")
     public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
         Notification createdNotification = notificationService.createNotification(notification);
         return ResponseEntity.ok(createdNotification);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER')")
     public ResponseEntity<Notification> updateNotification(@PathVariable Long id, @RequestBody Notification notification) {
         notification.setId(id);
         Notification updatedNotification = notificationService.updateNotification(notification);
@@ -47,6 +45,7 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER')")
     public ResponseEntity<Void> deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();

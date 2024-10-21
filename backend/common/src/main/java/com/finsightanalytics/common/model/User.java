@@ -1,3 +1,5 @@
+package com.finsightanalytics.common.model;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 

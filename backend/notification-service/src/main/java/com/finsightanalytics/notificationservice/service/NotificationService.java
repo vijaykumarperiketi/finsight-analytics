@@ -131,10 +131,6 @@
             return notificationRepository.findById(id).orElseThrow(() -> new NotificationNotFoundException("Notification not found with id: " + id));
         }
 
-        public List<Notification> getAllNotifications() {
-            return notificationRepository.findAll();
-        }
-
         public List<Notification> getNotificationsByUserId(Long userId) {
             return notificationRepository.findByUserId(userId);
         }

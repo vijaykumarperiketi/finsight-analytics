@@ -1,6 +1,7 @@
 package com.finsightanalytics.usermanagement.service;
 
 import com.finsightanalytics.common.exception.UserNotFoundException;
+import com.finsightanalytics.common.exception.InsufficientBalanceException;
 import com.finsightanalytics.common.model.User;
 import com.finsightanalytics.usermanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +114,7 @@ public class UserService {
                 user.setBalance(user.getBalance().add(amount));
             } else if ("debit".equalsIgnoreCase(transactionType)) {
                 if (user.getBalance().compareTo(amount) < 0) {
-                    throw new InsufficientFundsException("Insufficient balance for user with ID: " + userId);
+                    throw new InsufficientBalanceException("Insufficient balance for user with ID: " + userId);
                 }
                 user.setBalance(user.getBalance().subtract(amount));
             }

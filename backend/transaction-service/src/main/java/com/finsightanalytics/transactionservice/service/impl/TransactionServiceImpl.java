@@ -27,27 +27,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @Transactional
-    public Transaction updateTransaction(Long id, Transaction transaction) {
-        if (!transactionRepository.existsById(id)) {
-            throw new RuntimeException("Transaction not found with id: " + id);
-        }
-        transaction.setId(id); // Ensure the ID is set
-        Transaction updatedTransaction = transactionRepository.save(transaction);
-        kafkaProducerService.sendTransactionMessage(updatedTransaction); // Notify Kafka of the update
-        return updatedTransaction;
-    }
-
-    @Override
-    @Transactional
-    public void deleteTransaction(Long id) {
-        if (!transactionRepository.existsById(id)) {
-            throw new RuntimeException("Transaction not found with id: " + id);
-        }
-        transactionRepository.deleteById(id);
-    }
-
-    @Override
     public Transaction getTransactionById(Long id) {
         return transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));

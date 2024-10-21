@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "transaction-service", url = "http://transaction-service.default.svc.cluster.local:8080")
+@FeignClient(name = "transaction-service", url = "${feign.client.transaction-service.url}")
 public interface TransactionClient {
 
     @GetMapping("/transactions")
-    List<Transaction> getAllTransactions(@RequestParam String role);
+    List<Transaction> getAllTransactions();
 }

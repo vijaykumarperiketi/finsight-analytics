@@ -88,6 +88,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getDebtsByUserId(userId));
     }
 
+    @GetMapping("/{userId}/debts/{debtId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER', 'CUSTOMER')")
+    public ResponseEntity<Debt> getUserDebtById(@PathVariable Long userId, @PathVariable Long debtId) {
+        return ResponseEntity.ok(userService.getUserDebtById(userId, debtId));
+    }
+
     @PostMapping("/{userId}/debts")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Debt> createDebt(@PathVariable Long userId, @RequestBody Debt debt) {
