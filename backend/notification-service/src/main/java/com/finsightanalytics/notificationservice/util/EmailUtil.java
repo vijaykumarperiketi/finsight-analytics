@@ -1,4 +1,4 @@
-package com.finsightanalytics.common.util;
+package com.finsightanalytics.notificationservice.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

@@ -16,7 +16,6 @@
         <module>recommendation-engine</module>
         <module>analytics-service</module>
         <module>admin-service</module>
-        <module>frontend</module>
     </modules>
 
     <properties>
