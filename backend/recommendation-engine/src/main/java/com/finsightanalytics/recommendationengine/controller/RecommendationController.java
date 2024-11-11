@@ -1,58 +1,88 @@
 package com.finsightanalytics.recommendationengine.controller;
 
-import com.finsightanalytics.common.model.Recommendation;
-import com.finsightanalytics.recommendationengine.service.RecommendationService;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.finsightanalytics.common.model.RecommendationType;
+import com.finsightanalytics.recommendationengine.model.Neo4jRecommendation;
+import com.finsightanalytics.recommendationengine.service.RecommendationService;
 
 @RestController
 @RequestMapping("/recommendations")
 public class RecommendationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RecommendationController.class);
+
     @Autowired
     private RecommendationService recommendationService;
 
-    @GetMapping("/transaction-based/{userId}")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
-    public ResponseEntity<List<Recommendation>> getTransactionBasedRecommendations(@PathVariable Long userId) {
-        List<Recommendation> recommendations = recommendationService.generateTransactionBasedRecommendations(userId);
-        return ResponseEntity.ok(recommendations);
+    // 1. Get recent recommendations for a user
+    @GetMapping("/recent/{userId}")
+    public ResponseEntity<List<Neo4jRecommendation>> getRecentRecommendations(@PathVariable Long userId) {
+        try {
+            List<Neo4jRecommendation> recommendations = recommendationService.fetchRecentRecommendations(userId);
+            if (recommendations.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(recommendations);
+        } catch (Exception e) {
+            logger.error("Error fetching recent recommendations for user {}: {}", userId, e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
-    @GetMapping("/financial-goal/{userId}/{goalId}")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
-    public ResponseEntity<List<Recommendation>> getFinancialGoalRecommendations(@PathVariable Long userId, @PathVariable Long goalId) {
-        List<Recommendation> recommendations = recommendationService.generateFinancialGoalRecommendations(userId, goalId);
-        return ResponseEntity.ok(recommendations);
+    // 2. Get recommendations by type for a user
+    @GetMapping("/type/{userId}/{type}")
+    public ResponseEntity<List<Neo4jRecommendation>> getRecommendationsByType(@PathVariable Long userId,
+                                                                              @PathVariable RecommendationType type) {
+        try {
+            List<Neo4jRecommendation> recommendations = recommendationService.fetchRecommendationsByType(userId, type);
+            if (recommendations.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(recommendations);
+        } catch (Exception e) {
+            logger.error("Error fetching recommendations of type {} for user {}: {}", type, userId, e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
-    @GetMapping("/debt-goal/{userId}/{debtId}")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
-    public ResponseEntity<List<Recommendation>> getDebtManagementRecommendations(@PathVariable Long userId, @PathVariable Long debtId) {
-        List<Recommendation> recommendations = recommendationService.generateDebtManagementRecommendations(userId, debtId);
-        return ResponseEntity.ok(recommendations);
+    // 3. Get all recommendations for a user
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<List<Neo4jRecommendation>> getAllRecommendations(@PathVariable Long userId) {
+        try {
+            List<Neo4jRecommendation> recommendations = recommendationService.fetchAllRecommendations(userId);
+            if (recommendations.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(recommendations);
+        } catch (Exception e) {
+            logger.error("Error fetching all recommendations for user {}: {}", userId, e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
-    @GetMapping("/peer-based/{userId}")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
-    public ResponseEntity<List<Recommendation>> getPeerBasedRecommendations(@PathVariable Long userId) {
-        List<Recommendation> recommendations = recommendationService.generatePeerBasedRecommendations(userId);
-        return ResponseEntity.ok(recommendations);
-    }
-
-    @GetMapping("/lifecycle-based/{userId}")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
-    public ResponseEntity<List<Recommendation>> getLifecycleBasedRecommendations(@PathVariable Long userId) {
-        List<Recommendation> recommendations = recommendationService.generateLifecycleBasedRecommendations(userId);
-        return ResponseEntity.ok(recommendations);
-    }
-
-    @PostMapping("/custom/{bankerId}/{userId}/{ifscCode}")
-    @PreAuthorize("hasAnyRole('BANKER')")
-    public ResponseEntity<Recommendation> createCustomRecommendation(@PathVariable Long bankerId, @PathVariable Long userId, @PathVariable String ifscCode, @RequestBody Recommendation recommendation) {
-        recommendationService.createCustomRecommendation(bankerId, userId, ifscCode, recommendation);
-        return ResponseEntity.ok(recommendation);
+    // 4. Create a custom recommendation
+    @PostMapping("/custom/{bankerId}/{userId}")
+    public ResponseEntity<Neo4jRecommendation> createCustomRecommendation(@PathVariable Long bankerId,
+                                                                          @PathVariable Long userId,
+                                                                          @RequestBody Neo4jRecommendation recommendation) {
+        try {
+            Neo4jRecommendation createdRecommendation = recommendationService.createCustomRecommendation(bankerId, userId, recommendation);
+            return ResponseEntity.ok(createdRecommendation);
+        } catch (Exception e) {
+            logger.error("Error creating custom recommendation for user {}: {}", userId, e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 }

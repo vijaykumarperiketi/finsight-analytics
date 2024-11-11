@@ -3,7 +3,7 @@
     import com.finsightanalytics.common.exception.NotificationNotFoundException;
     import com.finsightanalytics.common.model.Notification;
     import com.finsightanalytics.notificationservice.repository.NotificationRepository;
-    import com.finsightanalytics.common.util.EmailUtil;
+    import com.finsightanalytics.notificationservice.util.EmailUtil;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.kafka.annotation.KafkaListener;
     import org.springframework.scheduling.annotation.Scheduled;
@@ -39,7 +39,7 @@
             notification = notificationRepository.save(notification);
 
             // If no scheduled time is provided, send immediately
-            if (notification.getScheduledTime() == null) {
+            if (notification.getTimestamp() == null) {
                 sendNotification(notification);
             }
 
@@ -78,13 +78,13 @@
         // Method to send email notification
         private void sendEmail(Notification notification) {
             String subject = "Notification: " + notification.getType();
-            emailUtil.sendSimpleMessage(notification.getUserEmail(), subject, notification.getMessage());
+            emailUtil.sendSimpleMessage(notification.getUserId().toString(), subject, notification.getMessage());
         }
 
         // Method to send SMS notification
         private void sendSms(Notification notification) {
             //ToDo: Implement SMS sending logic here
-            System.out.println("Sending SMS to " + notification.getUserPhone() + ": " + notification.getMessage());
+            System.out.println("Sending SMS to " + notification.getUserId() + ": " + notification.getMessage());
         }
 
         // Method to send in-app notification
@@ -122,7 +122,7 @@
                 notification = objectMapper.readValue(message, Notification.class);
             } catch (Exception e) {
                 // Throw a custom exception when the message is invalid or cannot be parsed
-                throw new NotificationNotFoundException("Failed to parse notification message: " + message, e);
+                throw new NotificationNotFoundException("Failed to parse notification message: " + message);
             }
             return notification;
         }

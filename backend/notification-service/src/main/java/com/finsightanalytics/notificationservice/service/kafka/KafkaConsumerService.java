@@ -1,8 +1,8 @@
-package com.example.notificationservice.kafka;
+package com.finsightanalytics.notificationservice.service.kafka;
 
-import com.example.common.model.Notification;
-import com.example.common.model.Transaction;
-import com.example.notificationservice.repository.NotificationRepository;
+import com.finsightanalytics.common.model.Notification;
+import com.finsightanalytics.common.model.Transaction;
+import com.finsightanalytics.notificationservice.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class KafkaConsumerService {
     public void consumeTransaction(Transaction transaction) {
         Notification notification = new Notification();
         notification.setUserId(transaction.getUserId());
-        notification.setMessage("Transaction of " + transaction.getAmount() + " " + transaction.getType());
+        notification.setMessage("Transaction of " + transaction.getAmount() + " " + transaction.getType().toString());
         notification.setDelivered(false);
         notification.setTimestamp(LocalDateTime.now());
         notificationRepository.save(notification);

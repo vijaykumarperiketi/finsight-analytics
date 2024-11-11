@@ -1,28 +1,35 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Debt {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long debtId;
     private Long userId;
     private String name;
     private BigDecimal totalAmount;
     private BigDecimal paidAmount;
-    private LocalDateTime dueDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate lastContributionDate;
+    private boolean cleared = false;
 
     // Getters and setters
-    public Long getId() {
-        return id;
+    public Long getDebtId() {
+        return debtId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDebtId(Long debtId) {
+        this.debtId = debtId;
     }
 
     public Long getUserId() {
@@ -57,11 +64,35 @@ public class Debt {
         this.paidAmount = paidAmount;
     }
 
-    public LocalDateTime getDueDate() {
-        return dueDate;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public LocalDate getLastContributionDate() {
+        return lastContributionDate;
+    }
+
+    public void setLastContributionDate(LocalDate lastContributionDate) {
+        this.lastContributionDate = lastContributionDate;
+    }
+
+    public boolean isCleared() {
+        return cleared;
+    }
+
+    public void setCleared(boolean cleared) {
+        this.cleared = cleared;
     }
 }

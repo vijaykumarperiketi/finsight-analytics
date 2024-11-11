@@ -42,7 +42,7 @@ public class AdminService {
 
     @Cacheable(value = "analytics", key = "#page + '-' + #size")
     public Page<Analytics> getAllAnalytics(int page, int size) {
-        List<Analytics> analytics = analyticsClient.getAllAnalytics();
+        List<Analytics> analytics = analyticsClient.getAllAnalyticsData();
         return paginate(analytics, page, size);
     }
 

@@ -1,6 +1,6 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
 
 @Embeddable

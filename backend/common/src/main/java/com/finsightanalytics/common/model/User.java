@@ -1,29 +1,36 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long userId;
     private String username;
     private String password;
     private String email;
+    private Long phoneNumber;
+    private String ifscCode;
     private boolean active;
     private BigDecimal balance;
-    private String notificationPreference;
+    private BigDecimal totalSavings;
+    private NotificationType notificationPreference;
     private Role role;
 
     // Getters and setters
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -49,6 +56,14 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+        
+    public Long getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public boolean isActive() {
         return active;
@@ -66,11 +81,11 @@ public class User {
         this.balance = balance;
     }
 
-    public String getNotificationPreference() {
+    public NotificationType getNotificationPreference() {
         return notificationPreference;
     }
 
-    public void setNotificationPreference(String notificationPreference) {
+    public void setNotificationPreference(NotificationType notificationPreference) {
         this.notificationPreference = notificationPreference;
     }
 
@@ -80,5 +95,21 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getIfscCode() {
+        return ifscCode;
+    }
+
+    public void setIfscCode(String ifscCode) {
+        this.ifscCode = ifscCode;
+    }
+
+    public BigDecimal getTotalSavings() {
+        return totalSavings;
+    }
+
+    public void setTotalSavings(BigDecimal totalSavings) {
+        this.totalSavings = totalSavings;
     }
 }

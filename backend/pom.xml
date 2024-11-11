@@ -19,9 +19,11 @@
     </modules>
 
     <properties>
-        <java.version>11</java.version>
-        <spring-cloud.version>2020.0.4</spring-cloud.version>
-        <spring-boot.version>2.5.5</spring-boot.version>
+        <java.version>17</java.version>
+        <spring-cloud.version>2022.0.5</spring-cloud.version>
+        <spring-boot.version>3.1.5</spring-boot.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -48,10 +50,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version> <!-- Added version -->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version> <!-- Added version -->
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

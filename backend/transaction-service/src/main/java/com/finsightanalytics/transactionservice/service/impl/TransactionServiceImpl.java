@@ -1,13 +1,15 @@
-package com.finsightanalytics.transactionservice.service;
+package com.finsightanalytics.transactionservice.service.impl;
 
-import com.finsightanalytics.common.model.Transaction;
-import com.finsightanalytics.transactionservice.repository.TransactionRepository;
-import com.finsightanalytics.transactionservice.service.kafka.KafkaProducerService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.finsightanalytics.common.model.Transaction;
+import com.finsightanalytics.transactionservice.repository.TransactionRepository;
+import com.finsightanalytics.transactionservice.service.TransactionService;
+import com.finsightanalytics.transactionservice.service.kafka.KafkaProducerService;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {

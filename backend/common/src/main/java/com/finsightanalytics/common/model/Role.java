@@ -1,4 +1,4 @@
-package com.finsightanalytics.common.util;
+package com.finsightanalytics.common.model;
 
 public enum Role {
     CUSTOMER,    // Role for customers of the platform

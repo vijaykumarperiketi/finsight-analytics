@@ -1,28 +1,40 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.*;
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class Recommendation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long recommendationId;
 
     private Long userId;
+    private String type;
+    private String message;
+    private LocalDate dateCreated;
+    private Long bankerId;
 
-    private RecommendationType type;
-
-    private String recommendation;
-
-    private int score;
-
-    public Long getId() {
-        return id;
+    @PrePersist
+    public void prePersist() {
+        dateCreated = LocalDate.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @PreUpdate
+    public void preUpdate() {
+        dateCreated = LocalDate.now();
+    }
+
+    // Getters and setters
+    public Long getRecommendationId() {
+        return recommendationId;
     }
 
     public Long getUserId() {
@@ -33,27 +45,35 @@ public class Recommendation {
         this.userId = userId;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getType() {
+        return type;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getRecommendation() {
-        return recommendation;
+    public String getMessage() {
+        return message;
     }
 
-    public void setRecommendation(String recommendation) {
-        this.recommendation = recommendation;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public int getScore() {
-        return score;
+    public LocalDate getDateCreated() {
+        return dateCreated;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Long getBankerId() {
+        return bankerId;
+    }
+
+    public void setBankerId(Long bankerId) {
+        this.bankerId = bankerId;
     }
 }
