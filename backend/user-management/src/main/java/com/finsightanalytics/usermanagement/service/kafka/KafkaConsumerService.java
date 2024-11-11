@@ -1,14 +1,21 @@
 package com.finsightanalytics.usermanagement.service.kafka;
 
-import com.finsightanalytics.common.model.Transaction;
-import com.finsightanalytics.usermanagement.service.UserService;
-import com.finsightanalytics.usermanagement.exception.InvalidTransactionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import com.finsightanalytics.common.exception.InvalidTransactionException;
+import com.finsightanalytics.common.model.Transaction;
+import com.finsightanalytics.common.model.TransactionType;
+import com.finsightanalytics.usermanagement.service.UserService;
+
 @Service
 public class KafkaConsumerService {
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConsumerService.class);
 
     @Autowired
     private UserService userService;
@@ -17,8 +24,8 @@ public class KafkaConsumerService {
     public void consumeTransaction(Transaction transaction) {
         try {
             // Validate transaction type: debit or credit
-            if (!"debit".equalsIgnoreCase(transaction.getType()) && !"credit".equalsIgnoreCase(transaction.getType())) {
-                throw new InvalidTransactionException("Invalid transaction type: " + transaction.getType());
+            if (transaction.getType() != TransactionType.DEBIT && transaction.getType() != TransactionType.CREDIT) {
+                throw new InvalidTransactionException("Invalid transaction type: " + transaction.getType().toString());
             }
 
             // Pass the transaction details to userService to update the financial goals or debts based on the transaction
@@ -26,13 +33,13 @@ public class KafkaConsumerService {
                     transaction.getUserId(),
                     transaction.getFinancialGoalId(),
                     transaction.getDebtId(),
-                    transaction.getType(),
+                    transaction.getType().toString(),
                     transaction.getAmount()
             );
 
-        } catch (Exception e) {
+        } catch (KafkaException e) {
             // Handle any exceptions that may occur during the processing
-            System.err.println("Error processing transaction: " + e.getMessage());
+            logger.error("Error processing transaction: ", e.getMessage());
         }
     }
 }

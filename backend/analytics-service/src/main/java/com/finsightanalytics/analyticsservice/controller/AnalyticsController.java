@@ -1,12 +1,21 @@
 package com.finsightanalytics.analyticsservice.controller;
 
-import com.finsightanalytics.common.model.Analytics;
-import com.finsightanalytics.analyticsservice.service.AnalyticsService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.finsightanalytics.analyticsservice.service.AnalyticsService;
+import com.finsightanalytics.common.model.Analytics;
 
 @RestController
 @RequestMapping("/analytics")
@@ -14,6 +23,13 @@ public class AnalyticsController {
 
     @Autowired
     private AnalyticsService analyticsService;
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANKER')")
+    public ResponseEntity<List<Analytics>> getAllAnalyticsData() {
+        List<Analytics> analyticsData = analyticsService.getAllAnalytics();
+        return ResponseEntity.ok(analyticsData);
+    }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'BANKER', 'CUSTOMER')")
@@ -36,7 +52,7 @@ public class AnalyticsController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'BANKER')")
     public ResponseEntity<Analytics> updateAnalytics(@PathVariable Long id, @RequestBody Analytics analytics) {
-        analytics.setId(id);
+        analytics.setAnalyticsId(id);
         return ResponseEntity.ok(analyticsService.updateAnalytics(analytics));
     }
 

@@ -2,9 +2,8 @@ package com.finsightanalytics.common;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 
-@SpringBootApplication(exclude = ThymeleafAutoConfiguration.class)
+@SpringBootApplication
 public class CommonApplication {
 
     public static void main(String[] args) {

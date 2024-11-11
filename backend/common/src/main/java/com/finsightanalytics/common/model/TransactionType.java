@@ -1,4 +1,4 @@
-package com.finsightanalytics.common.util;
+package com.finsightanalytics.common.model;
 
 public enum TransactionType {
     CREDIT,      // Represents a credit transaction

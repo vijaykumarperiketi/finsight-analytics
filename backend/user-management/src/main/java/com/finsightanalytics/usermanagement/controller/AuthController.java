@@ -1,12 +1,5 @@
 package com.finsightanalytics.usermanagement.controller;
 
-import com.finsightanalytics.common.exception.InvalidCredentialsException;
-import com.finsightanalytics.usermanagement.model.AuthRequest;
-import com.finsightanalytics.usermanagement.model.AuthResponse;
-import com.finsightanalytics.common.model.User;
-import com.finsightanalytics.common.service.AuthService;
-import com.finsightanalytics.common.util.JwtUtil;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +12,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.finsightanalytics.common.exception.InvalidCredentialsException;
+import com.finsightanalytics.common.exception.UserNotFoundException;
+import com.finsightanalytics.common.model.User;
+import com.finsightanalytics.common.util.JwtUtil;
+import com.finsightanalytics.usermanagement.model.AuthRequest;
+import com.finsightanalytics.usermanagement.model.AuthResponse;
+import com.finsightanalytics.usermanagement.service.AuthService;
+import com.finsightanalytics.usermanagement.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,6 +41,9 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
@@ -43,7 +52,9 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtil.generateToken(authRequest.getUsername());
+
+            User user = authService.findByUsername(authRequest.getUsername());
+            String jwt = jwtUtil.generateToken(user.getUsername(), user.getUserId(), user.getRole());
 
             Cookie cookie = new Cookie("jwt", jwt);
             cookie.setHttpOnly(true);
@@ -72,7 +83,6 @@ public class AuthController {
         response.addCookie(cookie);
         return ResponseEntity.noContent().build();
     }
-
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {

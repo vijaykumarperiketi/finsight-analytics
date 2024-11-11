@@ -1,5 +1,6 @@
 package com.finsightanalytics.common.util;
 
+import com.finsightanalytics.common.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -7,9 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -20,9 +19,8 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(String username, Long userId, List<Role> roles) {
-        List<String> roleNames = roles.stream().map(Role::name).collect(Collectors.toList());
-        Map<String, Object> claims = Map.of("userId", userId, "roles", roleNames);
+    public String generateToken(String username, Long userId, Role role) {
+        Map<String, Object> claims = Map.of("userId", userId, "role", role.name());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
@@ -41,10 +39,10 @@ public class JwtUtil {
         return claims.get("userId", Long.class);
     }
 
-    public List<Role> getRolesFromToken(String token) {
+    public Role getRoleFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
-        List<String> roleNames = claims.get("roles", List.class);
-        return roleNames.stream().map(Role::valueOf).collect(Collectors.toList());
+        String roleName = claims.get("role", String.class);
+        return Role.valueOf(roleName);
     }
 
     public boolean isTokenExpired(String token) {

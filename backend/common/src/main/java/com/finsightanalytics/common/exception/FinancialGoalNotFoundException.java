@@ -1,4 +1,4 @@
-package com.finsightanalytics.usermanagement.exception;
+package com.finsightanalytics.common.exception;
 
 public class FinancialGoalNotFoundException extends RuntimeException {
     public FinancialGoalNotFoundException(String message) {

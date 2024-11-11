@@ -1,29 +1,35 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class FinancialGoal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long financialGoalId;
     private Long userId;
     private String name;
     private BigDecimal targetAmount;
     private BigDecimal currentAmount;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate lastContributionDate;
+    private boolean achieved = false;
 
     // Getters and setters
-    public Long getId() {
-        return id;
+    public Long getFinancialGoalId() {
+        return financialGoalId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFinancialGoalId(Long financialGoalId) {
+        this.financialGoalId = financialGoalId;
     }
 
     public Long getUserId() {
@@ -58,19 +64,35 @@ public class FinancialGoal {
         this.currentAmount = currentAmount;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }   
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public boolean isAchieved() {
+        return achieved;
+    }
+
+    public void setAchieved(boolean achieved) {
+        this.achieved = achieved;
+    }
+
+    public LocalDate getLastContributionDate() {
+        return lastContributionDate;
+    }
+
+    public void setLastContributionDate(LocalDate lastContributionDate) {
+        this.lastContributionDate = lastContributionDate;
     }
 }

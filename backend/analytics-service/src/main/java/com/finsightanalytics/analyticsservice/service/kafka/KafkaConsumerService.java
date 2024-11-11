@@ -1,10 +1,11 @@
-package com.finsightanalytics.analyticsservice.kafka;
+package com.finsightanalytics.analyticsservice.service.kafka;
 
-import com.finsightanalytics.analyticsservice.service.AnalyticsService;
-import com.finsightanalytics.common.model.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import com.finsightanalytics.analyticsservice.service.AnalyticsService;
+import com.finsightanalytics.common.model.Transaction;
 
 @Service
 public class KafkaConsumerService {

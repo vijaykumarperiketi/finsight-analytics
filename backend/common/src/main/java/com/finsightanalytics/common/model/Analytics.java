@@ -1,14 +1,19 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Analytics {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long analyticsId;
 
     private Long userId;
 
@@ -19,12 +24,12 @@ public class Analytics {
 
     // Getters and setters
 
-    public Long getId() {
-        return id;
+    public Long getAnalyticsId() {
+        return analyticsId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAnalyticsId(Long analyticsId) {
+        this.analyticsId = analyticsId;
     }
 
     public Long getUserId() {

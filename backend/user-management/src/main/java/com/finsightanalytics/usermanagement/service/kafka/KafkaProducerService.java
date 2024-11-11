@@ -1,12 +1,14 @@
-package com.finsightanalytics.usermanagement.kafka;
+package com.finsightanalytics.usermanagement.service.kafka;
 
-import com.finsightanalytics.common.model.User;
-import com.finsightanalytics.common.model.Goal;
-import com.finsightanalytics.common.model.Debt;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.finsightanalytics.common.model.Debt;
+import com.finsightanalytics.common.model.FinancialGoal;
+import com.finsightanalytics.common.model.User;
 
 @Service
 public class KafkaProducerService {
@@ -43,17 +45,17 @@ public class KafkaProducerService {
     }
 
     // Produce goal created event
-    public void sendGoalCreatedEvent(Goal goal) {
+    public void sendGoalCreatedEvent(FinancialGoal goal) {
         sendEvent(GOAL_CREATED_TOPIC, goal);
     }
 
     // Produce goal updated event
-    public void sendGoalUpdatedEvent(Goal goal) {
+    public void sendGoalUpdatedEvent(FinancialGoal goal) {
         sendEvent(GOAL_UPDATED_TOPIC, goal);
     }
 
     // Produce goal finished event
-    public void sendGoalFinishedEvent(Goal goal) {
+    public void sendGoalFinishedEvent(FinancialGoal goal) {
         sendEvent(GOAL_FINISHED_TOPIC, goal);
     }
 
@@ -77,7 +79,7 @@ public class KafkaProducerService {
         try {
             String message = objectMapper.writeValueAsString(payload);
             kafkaTemplate.send(topic, message);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to send Kafka message", e);
         }
     }

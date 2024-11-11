@@ -1,33 +1,36 @@
 package com.finsightanalytics.common.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.finsightanalytics.common.model.TransactionType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long transactionId;
 
-    private Long userId;
     private BigDecimal amount;
     private TransactionType type; // Could be "credit" or "debit"
+    private String description;
     private LocalDateTime timestamp;
 
+    private Long userId;
     private Long financialGoalId;
     private Long debtId;
 
     // Getters and setters
-    public Long getId() {
-        return id;
+    public Long getTransactionId() {
+        return transactionId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
     }
 
     public Long getUserId() {
@@ -62,19 +65,27 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 
-    public LocalDateTime getFinancialGoalId() {
+    public Long getFinancialGoalId() {
         return financialGoalId;
     }
 
-    public void setFinancialGoalId(String financialGoalId) {
+    public void setFinancialGoalId(Long financialGoalId) {
         this.financialGoalId = financialGoalId;
     }
 
-    public LocalDateTime getdebtId() {
+    public Long getDebtId() {
         return debtId;
     }
 
-    public void setDebtId(String debtId) {
+    public void setDebtId(Long debtId) {
         this.debtId = debtId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

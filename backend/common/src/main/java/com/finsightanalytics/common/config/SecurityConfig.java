@@ -1,61 +1,69 @@
-package com.finsightanalytics.usermanagement;
+package com.finsightanalytics.common.config;
 
-import com.finsightanalytics.common.util.JwtRequestFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.finsightanalytics.common.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeRequests()
-            // Allow login, registration endpoints to be public
-            .antMatchers("/auth/**").permitAll()
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
-                // Securing User Management Service (CUSTOMER, BANKER, ADMIN roles)
-                .antMatchers(HttpMethod.GET, "/users/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/users/**").hasRole("CUSTOMER")
-                .antMatchers(HttpMethod.PUT, "/users/**").hasAnyRole("CUSTOMER", "ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())  // Updated CSRF configuration
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        // Allow login, registration endpoints to be public
+                        .requestMatchers("/auth/**").permitAll()
 
-                // Securing Transaction Service (CUSTOMER, BANKER, ADMIN roles)
-                .antMatchers(HttpMethod.GET, "/transactions/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/transactions/**").hasRole("CUSTOMER")
-                
-                // Securing Recommendation Engine (CUSTOMER, BANKER, ADMIN roles)
-                .antMatchers(HttpMethod.GET, "/recommendations/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/recommendations/**").hasRole("BANKER")
+                        // Securing User Management Service (CUSTOMER, BANKER, ADMIN roles)
+                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/users/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/users/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
 
-                // Securing Notification Service (CUSTOMER, BANKER, ADMIN roles)
-                .antMatchers(HttpMethod.GET, "/notifications/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/notifications/**").hasRole("BANKER")
+                        // Securing Transaction Service (CUSTOMER, BANKER, ADMIN roles)
+                        .requestMatchers(HttpMethod.GET, "/transactions/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/transactions/**").hasRole("CUSTOMER")
 
-                // Securing Analytics Service (CUSTOMER, BANKER, ADMIN roles)
-                .antMatchers(HttpMethod.GET, "/analytics/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
+                        // Securing Recommendation Engine (CUSTOMER, BANKER, ADMIN roles)
+                        .requestMatchers(HttpMethod.GET, "/recommendations/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/recommendations/**").hasRole("BANKER")
 
-                // Securing Admin Service (ADMIN only)
-                .antMatchers("/admin/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
-            .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                        // Securing Notification Service (CUSTOMER, BANKER, ADMIN roles)
+                        .requestMatchers(HttpMethod.GET, "/notifications/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/notifications/**").hasRole("BANKER")
+
+                        // Securing Analytics Service (CUSTOMER, BANKER, ADMIN roles)
+                        .requestMatchers(HttpMethod.GET, "/analytics/**").hasAnyRole("CUSTOMER", "BANKER", "ADMIN")
+
+                        // Securing Admin Service (ADMIN only)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         // Add JWT filter before processing requests
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
     @Bean

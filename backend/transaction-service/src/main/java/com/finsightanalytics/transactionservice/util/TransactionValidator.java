@@ -2,6 +2,7 @@ package com.finsightanalytics.transactionservice.util;
 
 import com.finsightanalytics.common.exception.InvalidTransactionException;
 import com.finsightanalytics.common.model.Transaction;
+import com.finsightanalytics.common.model.TransactionType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ public class TransactionValidator {
             throw new InvalidTransactionException("Transaction amount must be greater than zero");
         }
 
-        if (transaction.getType() == null || (!"credit".equalsIgnoreCase(transaction.getType()) && !"debit".equalsIgnoreCase(transaction.getType()))) {
+        if (transaction.getType() == null || (transaction.getType() != TransactionType.CREDIT && transaction.getType() != TransactionType.DEBIT)) {
             throw new InvalidTransactionException("Transaction type must be 'credit' or 'debit'");
         }
     }

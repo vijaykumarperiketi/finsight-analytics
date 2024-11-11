@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface DebtRepository extends JpaRepository<Debt, Long> {
     List<Debt> findByUserId(Long userId);
+    Debt findByIdAndUserId(Long debtId, Long userId);
 }
